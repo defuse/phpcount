@@ -205,7 +205,7 @@ class PHPCount
         $ids_hash = self::IDHash($pageID);
 
         $q = self::$DB->prepare(
-            'SELECT time FROM nodupes WHERE ids_hash = :ids_hash'
+            'SELECT `time` FROM nodupes WHERE ids_hash = :ids_hash'
         );
         $q->bindParam(':ids_hash', $ids_hash);
         $q->execute();
@@ -228,7 +228,7 @@ class PHPCount
         $ids_hash = self::IDHash($pageID);
 
         $q = self::$DB->prepare(
-            'SELECT time FROM nodupes WHERE ids_hash = :ids_hash'
+            'SELECT `time` FROM nodupes WHERE ids_hash = :ids_hash'
         );
         $q->bindParam(':ids_hash', $ids_hash);
         $q->execute();
@@ -238,7 +238,7 @@ class PHPCount
         if(($res = $q->fetch()) !== false)
         {
             $s = self::$DB->prepare(
-                'UPDATE nodupes SET time = :time WHERE ids_hash = :ids_hash'
+                'UPDATE nodupes SET `time` = :time WHERE ids_hash = :ids_hash'
             );
             $s->bindParam(':time', $curTime);
             $s->bindParam(':ids_hash', $ids_hash);
@@ -247,7 +247,7 @@ class PHPCount
         else
         {
             $s = self::$DB->prepare(
-                'INSERT INTO nodupes (ids_hash, time)
+                'INSERT INTO nodupes (ids_hash, `time`)
                  VALUES( :ids_hash, :time )'
             );
             $s->bindParam(':time', $curTime);
@@ -316,7 +316,7 @@ class PHPCount
         $last_interval = time() - self::HIT_OLD_AFTER_SECONDS;
 
         $q = self::$DB->prepare(
-            'DELETE FROM nodupes WHERE time < :time'
+            'DELETE FROM nodupes WHERE `time` < :time'
         );
         $q->bindParam(':time', $last_interval);
         $q->execute();
