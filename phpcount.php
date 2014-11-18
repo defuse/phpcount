@@ -80,6 +80,12 @@ class PHPCount
         }
     }
 
+    public static function setDBAdapter($db)
+    {
+        self::$DB = $db;
+        return $db;
+    }
+
     /*
      * Adds a hit to a page specified by a unique $pageID string.
      */
