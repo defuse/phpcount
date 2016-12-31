@@ -267,7 +267,7 @@ class PHPCount
     
     private static function IDHash($pageID)
     {
-        $visitorID = $_SERVER['REMOTE_ADDR'];
+        $visitorID = $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT'];
         return hash("SHA256", $pageID . $visitorID);
     }
 
