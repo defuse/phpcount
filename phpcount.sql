@@ -33,6 +33,11 @@ CREATE TABLE IF NOT EXISTS `hits` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
+-- add primary key
+--
+alter table hits add primary key (pageid, isunique);
+
+--
 -- Dumping data for table `hits`
 --
 

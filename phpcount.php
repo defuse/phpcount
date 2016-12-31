@@ -68,7 +68,7 @@ class PHPCount
         {
             // TODO: Set the database login credentials.
             self::$DB = new PDO(
-                'mysql:host=localhost;dbname=phpcount',
+                'mysql:host=SET_THIS_TO_HOSTNAME;dbname=SET_THIS_TO_DBNAME',
                 'SET_THIS_TO_THE_USERNAME', // Username
                 'SET_THIS_TO_THE_PASSWORD', // Password
                 array(PDO::ATTR_PERSISTENT => true)
@@ -99,7 +99,6 @@ class PHPCount
         self::InitDB();
 
         self::Cleanup();
-        self::CreateCountsIfNotPresent($pageID);
         if(self::UniqueHit($pageID))
         {
             self::CountHit($pageID, true);
@@ -119,8 +118,6 @@ class PHPCount
     {
         self::InitDB();
 
-        self::CreateCountsIfNotPresent($pageID);
-
         $q = self::$DB->prepare(
             'SELECT hitcount FROM hits
              WHERE pageid = :pageid AND isunique = :isunique'
@@ -135,8 +132,8 @@ class PHPCount
         }
         else
         {
-            die("Missing hit count from database!");
-            return false;
+            //die("Missing hit count from database!");
+            return 0;
         }
     }
     
@@ -259,8 +256,8 @@ class PHPCount
     private static function CountHit($pageID, $unique)
     {
         $q = self::$DB->prepare(
-            'UPDATE hits SET hitcount = hitcount + 1 ' .
-            'WHERE pageid = :pageid AND isunique = :isunique'
+            'INSERT INTO hits (pageid, isunique, hitcount) VALUES (:pageid, :isunique, 1) ' .
+            'ON DUPLICATE KEY UPDATE hitcount = hitcount + 1'
         );
         $q->bindParam(':pageid', $pageID);
         $unique = $unique ? '1' : '0';
@@ -273,44 +270,7 @@ class PHPCount
         $visitorID = $_SERVER['REMOTE_ADDR'];
         return hash("SHA256", $pageID . $visitorID);
     }
-    
-    private static function CreateCountsIfNotPresent($pageID)
-    {
-        // Non-unique
-        $q = self::$DB->prepare(
-            'SELECT pageid FROM hits WHERE pageid = :pageid AND isunique = 0'
-        );
-        $q->bindParam(':pageid', $pageID);
-        $q->execute();
 
-        if($q->fetch() === false)
-        {
-            $s = self::$DB->prepare(
-                'INSERT INTO hits (pageid, isunique, hitcount) 
-                 VALUES (:pageid, 0, 0)'
-            );
-            $s->bindParam(':pageid', $pageID);
-            $s->execute();
-        }
-
-        // Unique
-        $q = self::$DB->prepare(
-            'SELECT pageid FROM hits WHERE pageid = :pageid AND isunique = 1'
-        );
-        $q->bindParam(':pageid', $pageID);
-        $q->execute();
-
-        if($q->fetch() === false)
-        {
-            $s = self::$DB->prepare(
-                'INSERT INTO hits (pageid, isunique, hitcount) 
-                 VALUES (:pageid, 1, 0)'
-            );
-            $s->bindParam(':pageid', $pageID);
-            $s->execute();
-        }
-    }
-    
     private static function Cleanup()
     {
         $last_interval = time() - self::HIT_OLD_AFTER_SECONDS;
