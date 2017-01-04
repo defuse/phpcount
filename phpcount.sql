@@ -30,7 +30,12 @@ CREATE TABLE IF NOT EXISTS `hits` (
   `isunique` tinyint(1) NOT NULL,
   `hitcount` int(10) unsigned NOT NULL,
   KEY `pageid` (`pageid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- add primary key
+--
+alter table hits add primary key (pageid, isunique);
 
 --
 -- Dumping data for table `hits`
@@ -47,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `nodupes` (
   `ids_hash` char(64) NOT NULL,
   `time` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`ids_hash`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `nodupes`
